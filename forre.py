@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+from fractions import Fraction
+import math
 
 def quydong(l1,l2): # Quy dong hai list
 	l1_n = [ele*sum(l2) for ele in l1]
@@ -57,7 +59,7 @@ def dausis(l1,l2,du): # Tim list phan tich cua 2 list
 			dau1_value = hs1[dau1_index]
 			dau2_value = hs2[dau2_index]
 
-		rs += np.array(tem)
+		rs = rs + np.array(tem)
 
 		#print(dau1_index,dau2_index)
 	return rs.tolist()[1:] 
@@ -67,22 +69,43 @@ def dausis(l1,l2,du): # Tim list phan tich cua 2 list
 def leng(lista): # khoang cach cac diem
 	lengths =[0]*(len(lista)-1)
 	for i in range(len(lista)-1):
-		lengths[i] = lista[i+1][0]-lista[i][0]
+		lengths[i] = lista[i+1]-lista[i]
 	return lengths
+
+def khumau(lis): # Khu mau
+	lis_frac = [Fraction(ele).limit_denominator() for ele in lis]
+	#print(lis_frac)
+	lis_nume = [frac.numerator for frac in lis_frac]
+	#print(lis_nume)
+	lis_deno = [frac.denominator for frac in lis_frac]
+	#print(lis_deno)
+
+	como_deno = math.lcm(*lis_deno)
+	#print(como_deno)
+	lis_eff = [como_deno/num for num in lis_deno]
+	#print(lis_eff)
+	new_lis = [int(lis_nume[i]*lis_eff[i]) for i in range(len(lis_eff))]
+	#print(new_lis)
+	return new_lis, como_deno
+
 
 def Reparelib(lista): # Chuan bi thu vien
 
-	lib_vals = {ele[0]:ele[1] for ele in lista}
+	base, scale = khumau([ele[0] for ele in lista])
+	#print(base)
+
+	lib_vals = {base[i]:lista[i][1] for i in range(len(lista))}
 	#print(lib_vals)
 
 	keys = [key for key in lib_vals]
+	#print(keys)
 
 	for k in range(len(keys)-1):
 		lib_vals[keys[len(keys)-1-k]] =  lib_vals[keys[len(keys)-1-k]] - lib_vals[keys[len(keys)-2-k]]
 	lib_vals.pop(keys[0])
 	#print(lib_vals)
 
-	lengths = leng(lista)	# Do dai
+	lengths = leng(base)	# Do dai
 	#print(lengths)
 
 	new_keys = keys[1:]
@@ -92,7 +115,7 @@ def Reparelib(lista): # Chuan bi thu vien
 		lib_vals[key] = (lib_vals[key]/length,[1]*length)
 	#print(lib_vals)
 
-	return lib_vals
+	return lib_vals, scale
 
 def Caculate(lib_vals): # Giai hist thuc 1 bac
 	keys = [key for key in lib_vals]
@@ -133,7 +156,7 @@ class HitThuc(): # Tinh hist thuc
 
 	def __init__(self,lista):
 		self.bac = 1 # Bac cua phuong trinh 
-		self.last_vals = Reparelib(lista)
+		self.last_vals, self.scale = Reparelib(lista)
 		self.truc = list(self.last_vals.keys())
 		self.vals = [[self.last_vals[key][0] for key in self.truc]]
 		#print(last_vals)
@@ -175,9 +198,8 @@ class HitThuc(): # Tinh hist thuc
 		return pd.DataFrame(NormalTable(table)[1:],columns=table[0])
 
 
-vals = [(-5,875),(-1,3),(0,0),(3,27),(7,1715),(11,11979)]
-print(HitThuc(vals).last_vals)
-
+vals = [(-5,35),(-1,3),(0.5,-0.75),(3,3),(7,35),(11,99)]
+print(HitThuc(vals).draw())
 
 
 
