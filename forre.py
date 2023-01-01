@@ -1,6 +1,6 @@
 import numpy as np
-import pandas as pd
 from fractions import Fraction
+import pandas as pd
 import math
 
 def quydong(l1,l2): # Quy dong hai list
@@ -17,6 +17,7 @@ def dienso(start,end,value,lista): # Dien so cho list dua vao index dau va cuoi
 
 def dausis(l1,l2,du): # Tim list phan tich cua 2 list
 	hs1,hs2 = quydong(l1,l2)
+	#print(l1,l2)
 
 	dau1_index = len(hs1)-1
 	dau2_index = len(hs2)-1
@@ -27,6 +28,7 @@ def dausis(l1,l2,du): # Tim list phan tich cua 2 list
 
 	#print(dau1_value,dau2_value)
 
+	#print(du)
 	rs = np.array([0]*(len(l1)+len(l2)-du))
 
 	while dau1_index >= 0 and dau2_index >= 0:
@@ -59,17 +61,17 @@ def dausis(l1,l2,du): # Tim list phan tich cua 2 list
 			dau1_value = hs1[dau1_index]
 			dau2_value = hs2[dau2_index]
 
-		rs = rs + np.array(tem)
+		rs += np.array(tem)
 
 		#print(dau1_index,dau2_index)
 	return rs.tolist()[1:] 
 
 #print(dausis([3,2,1],[1,2,3],2))
 
-def leng(lista): # khoang cach cac diem
+def leng(lista,step): # khoang cach cac diem
 	lengths =[0]*(len(lista)-1)
 	for i in range(len(lista)-1):
-		lengths[i] = lista[i+1]-lista[i]
+		lengths[i] = int((lista[i+1][0]-lista[i][0])/step)
 	return lengths
 
 def khumau(lis): # Khu mau
@@ -88,24 +90,27 @@ def khumau(lis): # Khu mau
 	#print(new_lis)
 	return new_lis, como_deno
 
+def FindStep(lis): #Tim step cua he
+	base, scale = khumau(lis)
+	step = math.gcd(*base)/scale
+	#print(step)
+	return step
 
 def Reparelib(lista): # Chuan bi thu vien
 
-	base, scale = khumau([ele[0] for ele in lista])
-	#print(base)
-
-	lib_vals = {base[i]:lista[i][1] for i in range(len(lista))}
+	lib_vals = {ele[0]:ele[1] for ele in lista}
 	#print(lib_vals)
 
 	keys = [key for key in lib_vals]
-	#print(keys)
+	step = FindStep(keys)
+	#print(step)
 
 	for k in range(len(keys)-1):
 		lib_vals[keys[len(keys)-1-k]] =  lib_vals[keys[len(keys)-1-k]] - lib_vals[keys[len(keys)-2-k]]
 	lib_vals.pop(keys[0])
 	#print(lib_vals)
 
-	lengths = leng(base)	# Do dai
+	lengths = leng(lista,step)	# Do dai
 	#print(lengths)
 
 	new_keys = keys[1:]
@@ -115,10 +120,13 @@ def Reparelib(lista): # Chuan bi thu vien
 		lib_vals[key] = (lib_vals[key]/length,[1]*length)
 	#print(lib_vals)
 
-	return lib_vals, scale
+	return lib_vals, step
 
-def Caculate(lib_vals): # Giai hist thuc 1 bac
+#print(Reparelib([(0,0),(2,4),(3,18),(6,180),(8,448)]))
+
+def Caculate(lib_vals,step): # Giai hist thuc 1 bac
 	keys = [key for key in lib_vals]
+	#print(keys)
 	lib_tem = {}
 	for k in range(len(keys)-1):
 		a_val = lib_vals[keys[k]][0]
@@ -129,8 +137,9 @@ def Caculate(lib_vals): # Giai hist thuc 1 bac
 		b_lis = lib_vals[keys[k+1]][1]
 		b_length =  sum(b_lis)
 		
-		du = keys[k]-keys[k+1]+len(b_lis)
-		#print(keys[k],keys[k+1],b_length)
+		du = int((keys[k]-keys[k+1])/step+len(b_lis))
+		#print(du)
+		#print(a_lis,b_lis,du)
 		new_lis = dausis(a_lis,b_lis,du)
 		#print(new_lis)
 		
@@ -156,14 +165,15 @@ class HitThuc(): # Tinh hist thuc
 
 	def __init__(self,lista):
 		self.bac = 1 # Bac cua phuong trinh 
-		self.last_vals, self.scale = Reparelib(lista)
+		self.last_vals, self.step = Reparelib(lista)
 		self.truc = list(self.last_vals.keys())
 		self.vals = [[self.last_vals[key][0] for key in self.truc]]
+
 		#print(last_vals)
 		
 
 		while CheckStop(self.last_vals) > 1:
-			self.last_vals = Caculate(self.last_vals)
+			self.last_vals = Caculate(self.last_vals,self.step)
 			#print(last_vals)
 			keys = [key for key in self.last_vals]
 			self.vals.append([self.last_vals[key][0] for key in keys])
@@ -179,7 +189,7 @@ class HitThuc(): # Tinh hist thuc
 		truc = self.truc
 		#print(truc[0:])
 		vals = self.vals
-		base = list(range(truc[0],truc[-1]+1))
+		base = list(np.arange(truc[0],truc[-1]+self.step,self.step))
 		#print(base)
 
 		table = [base]
@@ -198,8 +208,11 @@ class HitThuc(): # Tinh hist thuc
 		return pd.DataFrame(NormalTable(table)[1:],columns=table[0])
 
 
-vals = [(-5,35),(-1,3),(0.5,-0.75),(3,3),(7,35),(11,99)]
-print(HitThuc(vals).vals)
+# val2 = [(-5,30),(-1,2),(0.5,-0.25),(3,6),(4,12),(6,30)]
+# print(HitThuc(val2).draw())
 
+val1 = [(-1.5,-7.875),(-1,3),(0.5,-0.375),(3,9),(4,32),(6,144)] #x^3-2x^2
+#print(HitThuc(val1).draw())
 
-
+val3 = [(1,0),(3,24),(4,60),(7,336),(8,504),(10,990)] #x^3-2x^2
+print(HitThuc(val3).draw())
