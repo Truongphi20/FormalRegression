@@ -199,7 +199,7 @@ class HitThuc(): # Tinh hist thuc
 
 
 vals = [(-5,35),(-1,3),(0.5,-0.75),(3,3),(7,35),(11,99)]
-print(HitThuc(vals).draw())
+print(HitThuc(vals).vals)
 
 
 
