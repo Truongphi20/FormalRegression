@@ -168,8 +168,8 @@ class HitThuc(): # Tinh hist thuc
 		self.last_vals, self.step = Reparelib(lista)
 		self.truc = list(self.last_vals.keys())
 		self.vals = [[self.last_vals[key][0] for key in self.truc]]
-		self.spine = [(self.last_vals[self.truc[0]][0],sum(self.last_vals[self.truc[0]][1]))]
-
+		self.spine = [(self.truc[0],self.last_vals[self.truc[0]][0],(sum(self.last_vals[self.truc[0]][1]),len(self.last_vals[self.truc[0]][1])))]
+		#spine: (xbase,val,(sum,len))
 		#print(last_vals)
 		
 
@@ -178,7 +178,7 @@ class HitThuc(): # Tinh hist thuc
 			#print(last_vals)
 			keys = [key for key in self.last_vals]
 			self.vals.append([self.last_vals[key][0] for key in keys])
-			self.spine.append((self.last_vals[keys[0]][0],sum(self.last_vals[keys[0]][1])))
+			self.spine.append((keys[0],self.last_vals[keys[0]][0],(sum(self.last_vals[keys[0]][1]),len(self.last_vals[keys[0]][1]))))
 
 			self.bac += 1
 
@@ -209,7 +209,5 @@ class HitThuc(): # Tinh hist thuc
 			table.append(tem)
 		return pd.DataFrame(NormalTable(table)[1:],columns=table[0])
 
-
-val2 = [(-1.5,-7.875),(-1,-3),(0.5,-0.375),(3,9),(4,32),(6,144)]
-#print(HitThuc(val2).draw())
-
+varsa = [(-5,30),(-1,2),(2,2),(3,6),(4,12),(6,30)]
+print(HitThuc(varsa).spine)
