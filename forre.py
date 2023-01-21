@@ -2,6 +2,9 @@ import numpy as np
 from fractions import Fraction
 import pandas as pd
 import math
+from module import sumfor as sf
+import re
+
 
 def quydong(l1,l2): # Quy dong hai list
 	l1_n = [ele*sum(l2) for ele in l1]
@@ -168,8 +171,8 @@ class HitThuc(): # Tinh hist thuc
 		self.last_vals, self.step = Reparelib(lista)
 		self.truc = list(self.last_vals.keys())
 		self.vals = [[self.last_vals[key][0] for key in self.truc]]
-		self.spine = [(self.truc[0],self.last_vals[self.truc[0]][0],(sum(self.last_vals[self.truc[0]][1]),len(self.last_vals[self.truc[0]][1])))]
-		#spine: (xbase,val,(sum,len))
+		self.spine = [(self.truc[0],self.last_vals[self.truc[0]][0],self.last_vals[self.truc[0]][1])]
+		#spine: (xbase,val,(ra,len))
 		#print(last_vals)
 		
 
@@ -178,7 +181,7 @@ class HitThuc(): # Tinh hist thuc
 			#print(last_vals)
 			keys = [key for key in self.last_vals]
 			self.vals.append([self.last_vals[key][0] for key in keys])
-			self.spine.append((keys[0],self.last_vals[keys[0]][0],(sum(self.last_vals[keys[0]][1]),len(self.last_vals[keys[0]][1]))))
+			self.spine.append((keys[0],self.last_vals[keys[0]][0],self.last_vals[keys[0]][1]))
 
 			self.bac += 1
 
@@ -209,5 +212,118 @@ class HitThuc(): # Tinh hist thuc
 			table.append(tem)
 		return pd.DataFrame(NormalTable(table)[1:],columns=table[0])
 
-varsa = [(-5,30),(-1,2),(2,2),(3,6),(4,12),(6,30)]
-print(HitThuc(varsa).spine)
+def make_dict(fora_con):
+	mu = re.findall(r'\*\*(\d+)',fora_con)
+	#print(mu)
+
+	hs = [i[0] for i in re.findall(r'([+-]\d+\.?\/?(\d+)?)',fora_con)]
+	#print(hs)
+
+	dicta = {mu[i]:hs[i] for i in range(len(hs))}
+	#print(dicta)
+	return dicta
+
+def check_con(constant, formula):
+	if constant < 0:
+		fora_con = f'{constant}*x**0' + formula
+	else:
+		fora_con = f'+{constant}*x**0' + formula
+	return fora_con
+
+def find_con(formula,hs_list,step): # Return added constant formula 
+	#print(hs_list)
+	mau = hs_list[1]*sum(hs_list[-1])
+	#print(mau)
+	start = hs_list[0] - (len(hs_list[-1])-1)*step
+	# print(start)
+	for count, hs in enumerate(hs_list[-1]):
+		#print(formula.replace('x',f'({start+count})'))
+		mau += - eval(formula.replace('x',f'({start+count*step})'))*hs
+		#print(mau)
+	constant = mau / sum(hs_list[-1])
+	#print(constant)
+
+	fora_con = check_con(constant, formula)
+
+	return fora_con
+
+def end_shot(fora_con, seed, step):
+	fora_dict = make_dict(fora_con)
+	#print(fora_dict)
+
+	final_fora = sf.find_final_step(fora_dict,step,step)
+	#print(final_fora)
+
+	con_end = seed[1] - eval(final_fora.replace('x', f'({seed[0]})'))
+	#print(con_end)
+
+	final = check_con(con_end, final_fora)
+
+	return final
+
+def inter_change(fora_con,spine,step):
+
+	for s in range(len(spine)-2):
+		fora_dict = make_dict(fora_con)
+		#print(fora_dict)
+
+		final_fora = sf.find_final_step(fora_dict,step,step)
+		# print(final_fora)
+
+		fora_con = find_con(final_fora,spine[len(spine)-3-s],step)
+		# print(fora_con)
+	return fora_con
+
+def dis_for(final):
+	fn = make_dict(final)
+	#print(fn)
+
+	new_fn = {i: eval(fn[i]) for i in fn if eval(fn[i]) != 0}
+	#print(new_fn)
+
+	for_dis = ""
+	for key in new_fn:
+		if new_fn[key] < 0:
+			for_dis += f'{str(new_fn[key])}x^{key}'
+		else:
+			for_dis += f'+{str(new_fn[key])}x^{key}'
+	#print(for_dis)
+	return for_dis
+
+varsa = [(-3,784),(0,1),(0.5,0.765625),(2,49),(8,261121),(9,529984),(10,998001)] #x^6-2x^3+1
+
+rs = HitThuc(varsa)
+#print(rs.draw())
+
+step = rs.step
+#print(step)
+
+bac = rs.bac
+#print(bac)
+
+spine = rs.spine
+#print(spine)
+
+truc = rs.truc
+# print(truc)
+
+seed = varsa[0]
+
+
+
+fora  = sf.find_final_step({0:spine[-1][1]},step,step)
+# print(fora)
+
+fora_con = find_con(fora,spine[-2],step)
+# print(fora_con)
+
+
+fora_con = inter_change(fora_con,spine,step)
+# print(fora_con)
+
+
+final = end_shot(fora_con, seed, step)
+print(dis_for(final))
+
+
+

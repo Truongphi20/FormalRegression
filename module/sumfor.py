@@ -3,7 +3,6 @@ import re
 import numpy as np
 import argparse
 
-
 # Initialize parser
 parser = argparse.ArgumentParser()
  
@@ -53,25 +52,14 @@ def chart(val):
 	#print(list_poli)
 	return list_poli
 
-def formal_for(in_for): # Covert string to formal string
-	# Read formula input
-	infor_add1 = re.sub(r'(^[+-]?|[+-])(x)',r'\g<1>1x',in_for) # Add 1 before x
-	infor_addx = re.sub(r'(x)([^^]|$)',r'\g<1>^1\g<2>',infor_add1) # Add ^1 after x
-	#print(infor_addx)
-	infor_addfr = re.sub(r'([+-]\d+)$',r'\g<1>x^0',infor_addx) # Add x^0 after free efficient
-	#print(infor_addfr)
-	infor_addfir = re.sub(r'^(\d+)',r'+\g<1>',infor_addfr) # Add + before the positive first 
-	return infor_addfir
 
 def dic_eff(in_for): # Creat a dic efficient dic
-	formal_string = formal_for(in_for)
-	#print(formal_string)
 
-	efficients = re.findall(r'[+-]\d+', formal_string)
-	#print(efficients)
-
-	factors = re.findall(r'\^(\d+)', formal_string)
+	factors = list(in_for.keys())
 	#print(factors)
+
+	efficients = [in_for[key] for key in factors]
+	#print(efficients)
 
 	dic = {int(factors[i]):Fraction(efficients[i]) for i in range(len(factors))}
 	#print(dic)
@@ -165,17 +153,16 @@ def find_final(formula,start,step):
 	#print(constant)
 
 	if constant != 0:
-		final_for = str(constant)+"*x^0"+formula
+		final_for = str(constant)+"*x**0"+formula
 	else:
 		final_for = formula
 
 	#print(final_for)
 	return final_for
 
-#in_for = "x^3-x^2+x"
 
 def find_final_step(formula,step,start):
-	final = Sum_Formula(formula,Fraction(step))
+	final = Sum_Formula(formula,step)
 	# print(final)
 
 	hs = re.split(r'\*x\^\d',final)[:-1:]
@@ -186,18 +173,18 @@ def find_final_step(formula,step,start):
 
 	hs_new = []
 	for h, m in zip(hs,mu):
-		hs_new.append(Fraction(h)/Fraction(step)**int(m))
+		hs_new.append(Fraction(h)/step**int(m))
 	#print(hs_new)
 
 	final_step = ''
 	for hs, m in zip(hs_new,mu):
 		if hs < 0:
-			final_step += str(hs)+'*x^'+str(m)
+			final_step += str(hs)+'*x**'+str(m)
 		else:
-			final_step += '+'+str(hs)+'*x^'+str(m)
+			final_step += '+'+str(hs)+'*x**'+str(m)
 	# print(final_step)
-	rs = find_final(final_step,Fraction(start),Fraction(step))
+	rs = find_final(final_step,start,step)
 
 	return rs
 
-print(find_final_step(args.formula,args.step,args.start))
+#print(find_final_step(eval(args.formula),Fraction(args.step),Fraction(args.start)))
