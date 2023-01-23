@@ -5,7 +5,6 @@ import math
 from module import sumfor as sf
 import re
 
-
 def quydong(l1,l2): # Quy dong hai list
 	l1_n = [ele*sum(l2) for ele in l1]
 	l2_n = [ele*sum(l1) for ele in l2]
@@ -106,28 +105,29 @@ def Reparelib(lista): # Chuan bi thu vien
 
 	keys = [key for key in lib_vals]
 	step = FindStep(keys)
-	#print(step)
+	# print(step)
 
 	for k in range(len(keys)-1):
 		lib_vals[keys[len(keys)-1-k]] =  lib_vals[keys[len(keys)-1-k]] - lib_vals[keys[len(keys)-2-k]]
 	lib_vals.pop(keys[0])
-	#print(lib_vals)
+	# print(lib_vals)
 
 	lengths = leng(lista,step)	# Do dai
-	#print(lengths)
+	# print(lengths)
 
 	new_keys = keys[1:]
 	#print(new_keys)
 
 	for length, key in zip(lengths,new_keys):
 		lib_vals[key] = (lib_vals[key]/length,[1]*length)
-	#print(lib_vals)
+	# print(lib_vals)
 
 	return lib_vals, step
 
 #print(Reparelib([(0,0),(2,4),(3,18),(6,180),(8,448)]))
 
 def Caculate(lib_vals,step): # Giai hist thuc 1 bac
+	#print(lib_vals,'\n')
 	keys = [key for key in lib_vals]
 	#print(keys)
 	lib_tem = {}
@@ -170,6 +170,7 @@ class HitThuc(): # Tinh hist thuc
 		self.bac = 1 # Bac cua phuong trinh 
 		self.last_vals, self.step = Reparelib(lista)
 		self.truc = list(self.last_vals.keys())
+		#print(self.truc, self.step)
 		self.vals = [[self.last_vals[key][0] for key in self.truc]]
 		self.spine = [(self.truc[0],self.last_vals[self.truc[0]][0],self.last_vals[self.truc[0]][1])]
 		#spine: (xbase,val,(ra,len))
@@ -213,11 +214,13 @@ class HitThuc(): # Tinh hist thuc
 		return pd.DataFrame(NormalTable(table)[1:],columns=table[0])
 
 def make_dict(fora_con):
-	mu = re.findall(r'\*\*(\d+)',fora_con)
-	#print(mu)
+	#print(fora_con)
 
-	hs = [i[0] for i in re.findall(r'([+-]\d+\.?\/?(\d+)?)',fora_con)]
-	#print(hs)
+	mu = re.findall(r'\*\*(\d+)',fora_con)
+	# print(mu)
+
+	hs = [i[0] for i in re.findall(r'([+-]\d+\.?\/?(\d+)?(e-)?(\d+)?)',fora_con)]
+	# print(hs)
 
 	dicta = {mu[i]:hs[i] for i in range(len(hs))}
 	#print(dicta)
@@ -290,10 +293,10 @@ def dis_for(final):
 	#print(for_dis)
 	return for_dis
 
-varsa = [(-3,784),(0,1),(0.5,0.765625),(2,49),(8,261121),(9,529984),(10,998001)] #x^6-2x^3+1
+varsa = [(-3,735),(-2,68),(-1,3),(0,0),(2,60),(3,723),(4,4088)] #x^6-2x
 
 rs = HitThuc(varsa)
-#print(rs.draw())
+print(rs.draw())
 
 step = rs.step
 #print(step)
