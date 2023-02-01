@@ -73,7 +73,7 @@ def dausis(l1,l2,du): # Tim list phan tich cua 2 list
 def leng(lista,step): # khoang cach cac diem
 	lengths =[0]*(len(lista)-1)
 	for i in range(len(lista)-1):
-		lengths[i] = int((lista[i+1][0]-lista[i][0])/step)
+		lengths[i] = int(float('%.6f'%((lista[i+1][0]-lista[i][0])/step)))
 	return lengths
 
 def khumau(lis): # Khu mau
@@ -100,8 +100,8 @@ def FindStep(lis): #Tim step cua he
 
 def Reparelib(lista): # Chuan bi thu vien
 
-	lib_vals = {ele[0]:ele[1] for ele in lista}
-	#print(lib_vals)
+	lib_vals = {ele[0]:Fraction(ele[1]).limit_denominator() for ele in lista}
+	# print(lib_vals)
 
 	keys = [key for key in lib_vals]
 	step = FindStep(keys)
@@ -110,7 +110,7 @@ def Reparelib(lista): # Chuan bi thu vien
 	for k in range(len(keys)-1):
 		lib_vals[keys[len(keys)-1-k]] =  lib_vals[keys[len(keys)-1-k]] - lib_vals[keys[len(keys)-2-k]]
 	lib_vals.pop(keys[0])
-	# print(lib_vals)
+	#print(lib_vals)
 
 	lengths = leng(lista,step)	# Do dai
 	# print(lengths)
@@ -140,11 +140,11 @@ def Caculate(lib_vals,step): # Giai hist thuc 1 bac
 		b_lis = lib_vals[keys[k+1]][1]
 		b_length =  sum(b_lis)
 		
-		du = int((keys[k]-keys[k+1])/step+len(b_lis))
+		du = int(round((keys[k]-keys[k+1]),10)/step+len(b_lis))
 		#print(du)
-		#print(a_lis,b_lis,du)
+		# print(a_lis,b_lis,du)
 		new_lis = dausis(a_lis,b_lis,du)
-		#print(new_lis)
+		# print(new_lis)
 		
 		new_val = (b_val - a_val)*b_length*a_length/sum(new_lis)
 		
@@ -164,6 +164,13 @@ def NormalTable(table): # Binh thuong hoa list table
 	new_table = [[" "]*len_empty[i]+table[i] for i in range(len(len_empty))]
 	return new_table
 
+def CreatBase(start, end, step):
+	step = round(step,6)
+	rs = [round(start,6)]
+	while rs[-1] != end:
+		rs.append(round(rs[-1]+step,6))
+	return rs
+
 class HitThuc(): # Tinh hist thuc
 
 	def __init__(self,lista):
@@ -179,7 +186,7 @@ class HitThuc(): # Tinh hist thuc
 
 		while CheckStop(self.last_vals) > 1:
 			self.last_vals = Caculate(self.last_vals,self.step)
-			#print(last_vals)
+			# print(self.last_vals)
 			keys = [key for key in self.last_vals]
 			self.vals.append([self.last_vals[key][0] for key in keys])
 			self.spine.append((keys[0],self.last_vals[keys[0]][0],self.last_vals[keys[0]][1]))
@@ -193,10 +200,11 @@ class HitThuc(): # Tinh hist thuc
 
 	def draw(self):
 		truc = self.truc
-		#print(truc[0:])
+		# print(truc)
 		vals = self.vals
-		base = list(np.arange(truc[0],truc[-1]+self.step,self.step))
-		#print(base)
+		# print(vals)
+		base = CreatBase(truc[0],truc[-1],self.step)
+		# print(base)
 
 		table = [base]
 		for b in range(self.bac):
@@ -279,10 +287,10 @@ def inter_change(fora_con,spine,step):
 
 def dis_for(final):
 	fn = make_dict(final)
-	#print(fn)
+	# print(fn)
 
-	new_fn = {i: eval(fn[i]) for i in fn if eval(fn[i]) != 0}
-	#print(new_fn)
+	new_fn = {i: round(float(fn[i]),10) for i in fn if round(float(fn[i]),10) != 0}
+	# print(new_fn)
 
 	for_dis = ""
 	for key in new_fn:
@@ -293,40 +301,43 @@ def dis_for(final):
 	#print(for_dis)
 	return for_dis
 
-varsa = [(-3,735),(-2,68),(-1,3),(0,0),(2,60),(3,723),(4,4088)] #x^6-2x
+def Forre(varsa):
+	rs = HitThuc(varsa)
+	# print(rs.draw())
 
-rs = HitThuc(varsa)
-print(rs.draw())
+	step = rs.step
+	#print(step)
 
-step = rs.step
-#print(step)
+	bac = rs.bac
+	#print(bac)
 
-bac = rs.bac
-#print(bac)
+	spine = rs.spine
+	# print(spine)
 
-spine = rs.spine
-#print(spine)
+	truc = rs.truc
+	# print(truc)
 
-truc = rs.truc
-# print(truc)
-
-seed = varsa[0]
-
+	seed = varsa[0]
 
 
-fora  = sf.find_final_step({0:spine[-1][1]},step,step)
-# print(fora)
+	fora  = sf.find_final_step({0:spine[-1][1]},step,step)
+	# print(fora)
 
-fora_con = find_con(fora,spine[-2],step)
-# print(fora_con)
+	fora_con = find_con(fora,spine[-2],step)
+	# print(fora_con)
 
+	fora_con = inter_change(fora_con,spine,step)
+	# print(fora_con)
 
-fora_con = inter_change(fora_con,spine,step)
-# print(fora_con)
-
-
-final = end_shot(fora_con, seed, step)
-print(dis_for(final))
-
+	final = end_shot(fora_con, seed, step)
+	# print(dis_for(final))
+	return dis_for(final)
 
 
+# varsa = [(-5,-115),(-1,1),(0,0),(4,56)] #x^3-2x
+varsa = [(0.1,-0.199),(0.7,-1.057),(0.8,-1.088),(1,-1),(1.1,-0.869)]
+
+
+
+final = Forre(varsa)
+print(final)
