@@ -81,6 +81,16 @@ Output:
 ## 3. Algorithm explanation
 ### 3.1 The canonical equation of Hit Sum Function
 
+The Hit Sum function, $g(x)$, always has the following form:
+    
+$$\left. {{S_n}} \right|_a^bf(x) = g(x)$$
+
+Once we know $f(x)$, we use the Hit Sum function to find $g(x)$. Conversely, when we know $g(x)$, we will use the canonical equation to find $f(x)$:
+
+$$f(x) = g(x) - g(x-n)$$
+
+For brevity, we can call $f(x)$ the inner function and $g(x)$ the outer function. The Hit Sum function and the above canonical equation are the relationships between $g(x)$ and $f(x)$. 
+
 ### 3.2 Establish the Minimalist Matrix
 
 ### 3.3 Use the Hit Sum Function to Regression
