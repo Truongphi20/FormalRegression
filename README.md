@@ -6,7 +6,7 @@ A new method for regression on the polynomial function that makes up the data.
 From a minimum number of points (including coordinates and values) of a polynomial function. We can use them to regress to the original equation. 
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/96680644/216259217-ee335dc9-c6c8-4fb9-9f2c-a72536eec1f7.png" alt="drawing" width="800"/>
+<img src="https://user-images.githubusercontent.com/96680644/216345877-47745b2b-85c6-4811-be64-18ad37920b90.png" alt="drawing" width="800"/>
 </p>
 
 
@@ -91,12 +91,24 @@ $$f(x) = g(x) - g(x-n)$$
 
 For brevity, we can call $f(x)$ the inner function and $g(x)$ the outer function. The Hit Sum function and the above canonical equation are the relationships between $g(x)$ and $f(x)$. 
 
-From the properties of the Hit Sum function, it is easy to deduce a useful canonical equation below:
+From the properties of the Hit Sum function, it is easy to deduce a general canonical equation below:
 
 $$g(h) - g(k) = \left. {{S_n}} \right|_{k + 1}^hf(x)$$ 
 
 With $(h-k)\mathrel{|} n$
 
 ### 3.2 Establish the Minimalist Matrix
+Set the unknown function that generates the data is an outer function. Base on the general canonical equation above, we can calculate the weighted average of the sum of the inner functions over a range.
+
+In row $0$ of matrix: 
+
+$$M_{0j} = \frac{y_j-y_{j-1}}{x_j-x_{j-1}}$$
+
+For others element in matrix:
+$$M_{ij} = [M_{(i-1)j}-M_{(i-1)(j-1)}].\frac{{{W_{(i - 1)j}}.{W_{(i - 1)(j - 1)}}}}{{{W_{ij}}}}$$
+
+where $W$ is the sum of the weights of an element in the matrix. For example, 
+
+
 
 ### 3.3 Use the Hit Sum Function to Regression
