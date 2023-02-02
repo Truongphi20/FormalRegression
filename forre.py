@@ -63,7 +63,7 @@ def dausis(l1,l2,du): # Tim list phan tich cua 2 list
 			dau1_value = hs1[dau1_index]
 			dau2_value = hs2[dau2_index]
 
-		rs += np.array(tem)
+		rs = rs + np.array(tem)
 
 		#print(dau1_index,dau2_index)
 	return rs.tolist()[1:] 
@@ -295,15 +295,15 @@ def dis_for(final):
 	for_dis = ""
 	for key in new_fn:
 		if new_fn[key] < 0:
-			for_dis += f'{str(new_fn[key])}x^{key}'
+			for_dis += f'{str(new_fn[key])}*x^{key}'
 		else:
-			for_dis += f'+{str(new_fn[key])}x^{key}'
+			for_dis += f'+{str(new_fn[key])}*x^{key}'
 	#print(for_dis)
 	return for_dis
 
 def Forre(varsa):
 	rs = HitThuc(varsa)
-	# print(rs.draw())
+	print(rs.draw())
 
 	step = rs.step
 	#print(step)
@@ -335,7 +335,7 @@ def Forre(varsa):
 
 
 # varsa = [(-5,-115),(-1,1),(0,0),(4,56)] #x^3-2x
-varsa = [(0.1,-0.199),(0.7,-1.057),(0.8,-1.088),(1,-1),(1.1,-0.869)]
+varsa = [(0.1,-0.199),(0.7,-1.057),(0.8,-1.088),(1,-1),(1.1,-0.869),(20,7960),(21,9219)]
 
 
 
