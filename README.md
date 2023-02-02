@@ -91,6 +91,12 @@ $$f(x) = g(x) - g(x-n)$$
 
 For brevity, we can call $f(x)$ the inner function and $g(x)$ the outer function. The Hit Sum function and the above canonical equation are the relationships between $g(x)$ and $f(x)$. 
 
+From the properties of the Hit Sum function, it is easy to deduce a useful canonical equation below:
+
+$$g(h) - g(k) = \left. {{S_n}} \right|_{k + 1}^hf(x)$$ 
+
+With $(h-k)\mathrel{|} n$
+
 ### 3.2 Establish the Minimalist Matrix
 
 ### 3.3 Use the Hit Sum Function to Regression
