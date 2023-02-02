@@ -104,11 +104,28 @@ In row $0$ of matrix:
 
 $$M_{0j} = \frac{y_j-y_{j-1}}{x_j-x_{j-1}}$$
 
+$W_{0j} = x_j-x_{j-1}$
+
+where $W$ is the sum of the weights of an element in the matrix.
+
 For others element in matrix:
 $$M_{ij} = [M_{(i-1)j}-M_{(i-1)(j-1)}].\frac{{{W_{(i - 1)j}}.{W_{(i - 1)(j - 1)}}}}{{{W_{ij}}}}$$
 
-where $W$ is the sum of the weights of an element in the matrix. For example, 
+For example, at element $M_{12}$ in [above example](#22-example) (value is $1/20$): 
 
+- At element $M_{02}$: $f^0(0.9)+f^0(1) = 0.088$ $\to W_{02}$ is 2 $\to M_{02} = 0.044$ 
+- At element $M_{01}$: $f^0(0.8)= -0.031$ $\to W_{01}$ is 1 $\to M_{01} = -0.031$
+
+Reduce fraction to a common two weight and apply the general canonical equation, we have:
+$$2f^1(0.9)+1f^1(1.0) = 0.15$$ 
+
+$\to W_{12} = 3$, thence inferred:
+
+$$M_{12} =  [M_{02}-M_{01}].\frac{{{W_{01}}.{W_{02}}}}{{{W_{12}}}} \leftrightarrow \frac{0.15}{3} = 0.05$$
+
+
+Similar to other matrix elements.
 
 
 ### 3.3 Use the Hit Sum Function to Regression
+Finally, take all the values of the matrix on the diagonal and sum by [calculating the Hit Sum function](https://github.com/Truongphi20/sumfor) to regress back to the original function.
