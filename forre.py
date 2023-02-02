@@ -4,6 +4,21 @@ import pandas as pd
 import math
 from module import sumfor as sf
 import re
+import argparse
+
+
+# Initialize parser
+parser = argparse.ArgumentParser()
+ 
+# Adding optional argument
+parser.add_argument("-f", "--input", help = 'input file contain points')
+parser.add_argument("-v",'--version', action='version', version='%(prog)s 2.0',help = 'show version')
+parser.add_argument("-m", "--matrix",default = 'n', help = 'Display the Minimalist Matrix, yes (y) or no (n)?')
+
+
+# Read arguments from command line
+args = parser.parse_args()
+
 
 def quydong(l1,l2): # Quy dong hai list
 	l1_n = [ele*sum(l2) for ele in l1]
@@ -63,7 +78,7 @@ def dausis(l1,l2,du): # Tim list phan tich cua 2 list
 			dau1_value = hs1[dau1_index]
 			dau2_value = hs2[dau2_index]
 
-		rs = rs + np.array(tem)
+		rs += np.array(tem)
 
 		#print(dau1_index,dau2_index)
 	return rs.tolist()[1:] 
@@ -303,7 +318,8 @@ def dis_for(final):
 
 def Forre(varsa):
 	rs = HitThuc(varsa)
-	print(rs.draw())
+	if args.matrix == 'y':
+		print('\nMinimalist Matrix:\n',rs.draw(),'\n\n')
 
 	step = rs.step
 	#print(step)
@@ -334,10 +350,20 @@ def Forre(varsa):
 	return dis_for(final)
 
 
-# varsa = [(-5,-115),(-1,1),(0,0),(4,56)] #x^3-2x
-varsa = [(0.1,-0.199),(0.7,-1.057),(0.8,-1.088),(1,-1),(1.1,-0.869),(20,7960),(21,9219)]
+def RepareInit(file):
+	input_f = open(file,'r').read()
+	# print(input_f)
+
+	varsa = eval(f'[{input_f}]')
+	# print(lista)
+
+	varsa.sort(key = lambda lis: lis[0])
+	# print(lista)
+
+	final = Forre(varsa)
+	# print(final)
+	return final
 
 
-
-final = Forre(varsa)
-print(final)
+final = RepareInit(args.input)
+print('\nFormal Formula:\n',final,'\n')
