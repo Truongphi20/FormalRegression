@@ -128,4 +128,8 @@ Similar to other matrix elements.
 
 
 ### 3.3 Use the Hit Sum Function to Regression
-Finally, take all the values of the matrix on the diagonal and sum by [calculating the Hit Sum function](https://github.com/Truongphi20/sumfor) to regress back to the original function.
+Finally, take all the values of the matrix on the diagonal and sum by [calculating the Hit Sum function](https://github.com/Truongphi20/sumfor) to regress back to the original function. At each sum, the function is adjusted to be constant by the values on the diagonal by the starting point change feature of the Hit Sum function.
+
+$$\left. {{S_n}} \right|_b^xf(x) = \left. {C + {S_n}} \right|_a^xf(x)$$
+
+Where $C$ is constant.
